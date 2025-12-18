@@ -23,7 +23,7 @@ fn build_ui(app: &Application) {
     let text_view = TextView::new();
     text_view.set_monospace(true);
 
-    let buffer = text_view.buffer().unwrap();
+    let buffer = text_view.buffer();
     let current_file = Rc::new(RefCell::new(None::<String>));
 
     let scroll = ScrolledWindow::builder()
