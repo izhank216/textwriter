@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,6 +19,17 @@ jobs:
         with:
           toolchain: stable
           override: true
+
+      - name: Cache Cargo registry and build
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
 
       - name: Install GTK4 dependencies
         run: |
@@ -34,16 +45,10 @@ jobs:
           cp target/release/textwriter release/
           ls -l release
 
-      - name: Create GitHub Release
+      - name: Create and upload GitHub release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
-        with:
           files: release/textwriter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
