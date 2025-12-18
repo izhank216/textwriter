@@ -23,7 +23,7 @@ fn build_ui(app: &Application) {
     let text_view = TextView::new();
     text_view.set_monospace(true);
 
-    let buffer = text_view.buffer();
+    let buffer = text_view.buffer().unwrap();
     let current_file = Rc::new(RefCell::new(None::<String>));
 
     let scroll = ScrolledWindow::builder()
@@ -98,12 +98,12 @@ fn build_ui(app: &Application) {
 
     let open_action = gio::SimpleAction::new("open", None);
     open_action.connect_activate(clone!(@strong buffer_clone, @strong current_file_clone, @strong window_clone => move |_, _| {
-        let dialog = FileChooserDialog::new(
-            Some("Open File"),
-            Some(&window_clone),
-            FileChooserAction::Open,
-            &[("Open", gtk4::ResponseType::Accept), ("Cancel", gtk4::ResponseType::Cancel)],
-        );
+        let dialog = FileChooserDialog::builder()
+            .transient_for(&window_clone)
+            .title("Open File")
+            .action(FileChooserAction::Open)
+            .build();
+        dialog.add_buttons(&[("Open", gtk4::ResponseType::Accept), ("Cancel", gtk4::ResponseType::Cancel)]);
         dialog.connect_response(clone!(@strong buffer_clone, @strong current_file_clone => move |d, resp| {
             if resp == gtk4::ResponseType::Accept {
                 if let Some(path) = d.file().and_then(|f| f.path()) {
@@ -130,12 +130,12 @@ fn build_ui(app: &Application) {
 
     let save_as_action = gio::SimpleAction::new("save_as", None);
     save_as_action.connect_activate(clone!(@strong buffer_clone, @strong current_file_clone, @strong window_clone => move |_, _| {
-        let dialog = FileChooserDialog::new(
-            Some("Save File"),
-            Some(&window_clone),
-            FileChooserAction::Save,
-            &[("Save", gtk4::ResponseType::Accept), ("Cancel", gtk4::ResponseType::Cancel)],
-        );
+        let dialog = FileChooserDialog::builder()
+            .transient_for(&window_clone)
+            .title("Save File")
+            .action(FileChooserAction::Save)
+            .build();
+        dialog.add_buttons(&[("Save", gtk4::ResponseType::Accept), ("Cancel", gtk4::ResponseType::Cancel)]);
         dialog.connect_response(clone!(@strong buffer_clone, @strong current_file_clone => move |d, resp| {
             if resp == gtk4::ResponseType::Accept {
                 if let Some(path) = d.file().and_then(|f| f.path()) {
@@ -158,7 +158,10 @@ fn build_ui(app: &Application) {
 
     let change_font_action = gio::SimpleAction::new("change_font", None);
     change_font_action.connect_activate(clone!(@strong buffer_clone, @strong window_clone => move |_, _| {
-        let dialog = FontChooserDialog::new(Some("Choose Font"), Some(&window_clone));
+        let dialog = FontChooserDialog::builder()
+            .transient_for(&window_clone)
+            .title("Choose Font")
+            .build();
         dialog.connect_response(clone!(@strong buffer_clone => move |d, resp| {
             if resp == gtk4::ResponseType::Ok {
                 if let Some(font_name) = d.font() {
@@ -180,7 +183,7 @@ fn build_ui(app: &Application) {
             .program_name("TextWriter")
             .version("0.1.0")
             .comments("Lightweight LXDE text editor written in Rust!")
-            .authors(vec!["Izhan"])
+            .authors(&["Izhan"])
             .license_type(gtk4::License::MitX11)
             .transient_for(&window_clone)
             .build();
