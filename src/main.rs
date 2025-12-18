@@ -23,7 +23,7 @@ fn build_ui(app: &Application) {
     let text_view = TextView::new();
     text_view.set_monospace(true);
 
-    let buffer = text_view.buffer().unwrap();
+    let buffer = text_view.buffer();
     let current_file = Rc::new(RefCell::new(None::<String>));
 
     let scroll = ScrolledWindow::builder()
@@ -183,7 +183,7 @@ fn build_ui(app: &Application) {
             .program_name("TextWriter")
             .version("0.1.0")
             .comments("Lightweight LXDE text editor written in Rust!")
-            .authors(&["Izhan"])
+            .authors(vec!["Izhan".to_string()])
             .license_type(gtk4::License::MitX11)
             .transient_for(&window_clone)
             .build();
