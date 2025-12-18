@@ -8,7 +8,7 @@ TextWriter is a **lightweight LXDE text editor written in Rust!** Licensed under
 
 ### From Source
 
-1. Install Rust and GTK4 development libraries
+**1. Install Rust and GTK4 development libraries**
 
 #### Debian/Ubuntu/LXDE:
 
