@@ -8,6 +8,8 @@ use gio::Menu;
 use std::cell::RefCell;
 use std::fs;
 use std::rc::Rc;
+use glib::clone;
+use gio::prelude::*;
 
 fn main() {
     let app = Application::builder()
@@ -44,7 +46,6 @@ fn build_ui(app: &Application) {
 
     let font_menu = Menu::new();
     font_menu.append("Change Font", "app.change_font");
-    font_menu.append("Change Font Size", "app.change_font_size");
 
     let font_button = MenuButton::builder()
         .label("Font")
@@ -110,7 +111,7 @@ fn build_ui(app: &Application) {
             }
             d.close();
         }));
-        dialog.show();
+        dialog.present();
     }));
     action_group.add_action(&open_action);
 
@@ -137,7 +138,7 @@ fn build_ui(app: &Application) {
             }
             d.close();
         }));
-        dialog.show();
+        dialog.present();
     }));
     action_group.add_action(&save_as_action);
 
@@ -153,29 +154,15 @@ fn build_ui(app: &Application) {
         dialog.connect_response(clone!(@strong text_view_clone => move |d, resp| {
             if resp == gtk4::ResponseType::Ok {
                 if let Some(font) = d.font() {
-                    text_view_clone.style_context().add_class(&font);
+                    let desc = pango::FontDescription::from_string(&font);
+                    text_view_clone.set_font(&desc);
                 }
             }
             d.close();
         }));
-        dialog.show();
+        dialog.present();
     }));
     action_group.add_action(&change_font_action);
-
-    let change_font_size_action = gio::SimpleAction::new("change_font_size", None);
-    change_font_size_action.connect_activate(clone!(@strong text_view_clone, @strong window_clone => move |_, _| {
-        let dialog = FontChooserDialog::new(Some("Change Font Size"), Some(&window_clone));
-        dialog.connect_response(clone!(@strong text_view_clone => move |d, resp| {
-            if resp == gtk4::ResponseType::Ok {
-                if let Some(font) = d.font() {
-                    text_view_clone.style_context().add_class(&font);
-                }
-            }
-            d.close();
-        }));
-        dialog.show();
-    }));
-    action_group.add_action(&change_font_size_action);
 
     let about_action = gio::SimpleAction::new("about", None);
     about_action.connect_activate(clone!(@strong window_clone => move |_, _| {
@@ -187,10 +174,10 @@ fn build_ui(app: &Application) {
             .license_type(gtk4::License::MitX11)
             .transient_for(&window_clone)
             .build();
-        dialog.show();
+        dialog.present();
     }));
     action_group.add_action(&about_action);
 
     window.insert_action_group("app", Some(&action_group));
-    window.show();
+    window.present();
 }
