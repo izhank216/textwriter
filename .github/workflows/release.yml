@@ -1,0 +1,48 @@
+name: Build and Release TextWriter
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install GTK4 dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgtk-4-dev pkg-config build-essential
+
+      - name: Build release
+        run: cargo build --release
+
+      - name: Prepare release artifact
+        run: |
+          mkdir -p release
+          cp target/release/textwriter release/
+          ls -l release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/textwriter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
