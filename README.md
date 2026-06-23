@@ -1,6 +1,6 @@
 # TextWriter
 
-TextWriter is a **lightweight LXDE text editor written in Rust!** Licensed under the **MIT License**.
+TextWriter is a **lightweight LXDE (Now available for windows!) text editor written in Rust!** Licensed under the **MIT License**.
 
 ---
 
