@@ -103,7 +103,6 @@ jobs:
       - name: Rename binaries for release
         run: |
           mv ./release-files/textwriter ./release-files/textwriter-linux
-          mv ./release-files/textwriter-windows.exe ./release-files/textwriter-windows.exe
 
       - name: Create and upload GitHub release
         uses: softprops/action-gh-release@v2
