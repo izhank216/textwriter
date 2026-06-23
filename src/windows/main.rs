@@ -47,7 +47,7 @@ pub struct TextWriterApp {
     #[nwg_layout_item(layout: grid, col: 0, row: 0)]
     text_edit: nwg::TextBox,
 
-    #[nwg_layout(parent: window, max_row: 1, max_col: 1)]
+    #[nwg_layout(parent: window, max_row: Some(1), max_column: Some(1))]
     grid: nwg::GridLayout,
 
     current_path: RefCell<Option<String>>,
@@ -71,7 +71,7 @@ impl TextWriterApp {
             if let Ok(path) = dialog.get_selected_item() {
                 if let Ok(content) = fs::read_to_string(&path) {
                     self.text_edit.set_text(&content);
-                    *self.current_path.borrow_mut() = Some(path);
+                    *self.current_path.borrow_mut() = Some(path.to_string_lossy().into_owned());
                 }
             }
         }
@@ -99,7 +99,7 @@ impl TextWriterApp {
             if let Ok(path) = dialog.get_selected_item() {
                 let text = self.text_edit.text();
                 let _ = fs::write(&path, text);
-                *self.current_path.borrow_mut() = Some(path);
+                *self.current_path.borrow_mut() = Some(path.to_string_lossy().into_owned());
             }
         }
     }
