@@ -1,3 +1,5 @@
+#![cfg(target_os = "linux")]
+
 use gtk4::prelude::*;
 use gtk4::{
     Application, ApplicationWindow, Box as GtkBox, FileChooserAction, FileChooserDialog,
