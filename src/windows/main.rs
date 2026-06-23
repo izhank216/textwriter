@@ -1,3 +1,4 @@
+#![cfg(target_os = "windows")]
 #![windows_subsystem = "windows"]
 
 use native_windows_derive::NwgUi;
